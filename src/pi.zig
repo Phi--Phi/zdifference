@@ -27,13 +27,28 @@ fn inversePI(k: i64) std.mem.Allocator.Error!f128 {
     const k1factorial = try factorial(fk128);
     const k3factorial = try factorial(3.0 * fk128);
     const k6factorial = try factorial(6.0 * fk128);
+    const zeroith = 12.0 * 13591409.0 / (c.powl(640320.0, 1.5));
+    if (k == 0) return zeroith;
     return (12.0 * c.powl(-1.0, ckl) * k6factorial * (13591409.0 + 545140134.0 * fk128)) /
         (k3factorial * c.powl(@floatCast(k1factorial), 3.0) * c.powl(640320.0, 3.0 * ckl + 1.5));
 }
 pub fn main() !void {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    const allocator = arena.allocator();
+    var list = std.ArrayList(f128).init(allocator);
+    try list.ensureTotalCapacityPrecise(35);
+    try list.append(0);
+    try list.append(1);
+    try list.append(2);
+    try list.append(6);
+    factorials = &list;
     comptime var k: i64 = 0;
+    var sum: f128 = 0.0;
     inline while (k < 5) : (k += 1) {
         const result = try inversePI(k);
-        std.debug.print("inverse pi[k={}]={}\n", .{ k, result });
+        sum += result;
+        std.debug.print("inverse pi[k={}]={}\t pi={}\n", .{ k, result, 1 / sum });
     }
+    std.debug.print("\t\t\t\t\t\t\t\t pi={}\n", .{@as(f128, std.math.pi)});
 }
