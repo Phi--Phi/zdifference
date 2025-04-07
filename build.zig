@@ -5,6 +5,7 @@ pub fn build(b: *std.Build) void {
         .name = "pi",
         .root_source_file = b.path("src/pi.zig"),
         .target = b.graph.host,
+        .link_libc = true,
     });
 
     b.installArtifact(exe);
